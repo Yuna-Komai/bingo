@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>着手ビンゴ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6f8;--ink:#1b2433;--sub:#5b6677;--line:#c9d2de;--hl:#ffe066;--hl-ink:#1b2433;--acc:#2f5fd0;--card:#ffffff;--err:#b3261e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161d;--ink:#e8ecf2;--sub:#97a2b3;--line:#2b3442;--hl:#e3c548;--hl-ink:#14181f;--acc:#7da2ff;--card:#1a202a;--err:#ff8a80}}
+:root[data-theme="dark"]{--bg:#12161d;--ink:#e8ecf2;--sub:#97a2b3;--line:#2b3442;--hl:#e3c548;--hl-ink:#14181f;--acc:#7da2ff;--card:#1a202a;--err:#ff8a80}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;line-height:1.6}
+main{max-width:440px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:28px;font-weight:900;margin:0 0 2px;letter-spacing:.02em}
+.lead{margin:0 0 18px;color:var(--sub);font-size:14px}
+.stat{display:flex;gap:16px;font-size:14px;color:var(--sub);margin-bottom:12px}
+.stat b{color:var(--ink);font-size:18px}
+.grid{display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:6px;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:14px 14px;padding:6px;border:2px solid var(--ink);border-radius:6px;background-color:var(--card)}
+.cell{aspect-ratio:1;border:2px solid var(--line);border-radius:4px;background:var(--card);padding:6px;display:flex;flex-direction:column;justify-content:space-between;font-size:13px;line-height:1.35;overflow:hidden;word-break:break-all}
+.cell.on{background:linear-gradient(transparent 12%,var(--hl) 12%,var(--hl) 88%,transparent 88%),var(--card);color:var(--hl-ink);border-color:var(--ink);font-weight:700;animation:pop .25s ease-out}
+.cell.win{outline:3px solid var(--acc);outline-offset:1px}
+.cell .d{font-size:11px;font-weight:400;opacity:.8}
+.cell .t{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.grid[data-n="4"] .cell{font-size:12px;padding:5px}
+.grid[data-n="5"] .cell,.grid[data-n="6"] .cell{font-size:10.5px;padding:3px;border-width:1.5px}
+.grid[data-n="5"] .cell .d,.grid[data-n="6"] .cell .d{font-size:9px}
+.grid[data-n="6"] .cell{font-size:9.5px;padding:2px}
+.size{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:14px}
+.size label{margin:0}
+select{font:inherit;font-size:16px;padding:8px 10px;border:2px solid var(--ink);border-radius:6px;background:var(--card);color:var(--ink)}
+@keyframes pop{from{transform:scale(.88)}to{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.cell.on{animation:none}}
+.msg{min-height:3.2em;margin:14px 0 4px;padding:10px 12px;border-radius:6px;background:var(--card);border-left:4px solid var(--acc);font-size:14px}
+.msg.err{border-left-color:var(--err);color:var(--err)}
+.row{display:flex;gap:8px;margin-top:10px}
+input[type=text]{flex:1;min-width:0;font:inherit;font-size:16px;padding:11px 12px;border:2px solid var(--ink);border-radius:6px;background:var(--card);color:var(--ink)}
+button{font:inherit;font-weight:700;cursor:pointer;border-radius:6px;border:2px solid var(--ink);padding:11px 16px;background:var(--hl);color:var(--hl-ink)}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line);font-weight:400;font-size:14px;padding:8px 12px}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.tools{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+details{margin-top:22px;border-top:1px solid var(--line);padding-top:12px}
+summary{cursor:pointer;font-weight:700}
+label{display:block;margin-top:12px;font-size:14px;color:var(--sub)}
+.rules{margin:10px 0 0;padding-left:1.2em;font-size:14px;color:var(--sub)}
+</style>
+</head>
+<body>
+<main>
+  <h1>着手ビンゴ</h1>
+  <p class="lead">終わらなくてOK。課題に手をつけたら1マス塗る。</p>
+
+  <div class="stat"><span>今のカード <b id="count">0</b>/<span id="total">9</span>マス</span><span>完成したカード <b id="done">0</b>枚</span><span>そろった列 <b id="lines">0</b></span></div>
+
+  <div class="size"><label for="size">マスの数</label>
+    <select id="size"><option value="2">2×2(4マス)</option><option value="3">3×3(9マス)</option><option value="4">4×4(16マス)</option><option value="5">5×5(25マス)</option><option value="6">6×6(36マス)</option></select>
+  </div>
+
+  <div class="grid" id="grid" aria-label="ビンゴカード"></div>
+
+  <div class="msg" id="msg" role="status" aria-live="polite">課題名を入れて「着手した」を押すと、マスが塗れます。</div>
+
+  <form class="row" id="form" onsubmit="return false">
+    <input type="text" id="task" placeholder="何に着手した?(例:レポート)" maxlength="30" autocomplete="off" aria-label="着手した課題名">
+    <button type="submit" id="go">着手した</button>
+  </form>
+
+  <div class="tools">
+    <button class="ghost" id="undo" type="button">直前の1マスを消す</button>
+    <button class="ghost" id="newcard" type="button">新しいカードにする</button>
+  </div>
+
+  <details>
+    <summary>ルール</summary>
+    <ul class="rules">
+      <li>同じ課題は1日1マスまで。別の課題なら同じ日に何マスでも塗れます。</li>
+      <li><span id="rule-n">9</span>マスすべて埋まったら1枚完成。期間は決めません。</li>
+    </ul>
+  </details>
+</main>
+
+<script>
+(function(){
+  var KEY="chakushu-bingo-v1";
+  var state={n:3,cells:Array(9).fill(null),done:0,seq:0};
+  try{var s=localStorage.getItem(KEY);if(s){var p=JSON.parse(s);if(p&&p.cells){var pn=p.n||3;if(pn>=2&&pn<=6&&p.cells.length===pn*pn){state=p;state.n=pn;}}}}catch(e){}
+  var $=function(id){return document.getElementById(id)};
+  function total(){return state.n*state.n;}
+  function lines(){
+    var n=state.n,L=[],i,j,a,b,d1=[],d2=[];
+    for(i=0;i<n;i++){a=[];b=[];for(j=0;j<n;j++){a.push(i*n+j);b.push(j*n+i);}L.push(a,b);d1.push(i*n+i);d2.push(i*n+(n-1-i));}
+    L.push(d1,d2);return L;
+  }
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  function today(){var d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
+  function label(k){var a=k.split("-");return a[1]+"/"+a[2];}
+  function filled(){return state.cells.filter(Boolean).length;}
+  function winLines(){return lines().filter(function(l){return l.every(function(i){return state.cells[i];});});}
+  function msg(t,err){var m=$("msg");m.textContent=t;m.className="msg"+(err?" err":"");}
+
+  function render(){
+    var g=$("grid");g.textContent="";
+    g.style.setProperty("--n",state.n);g.setAttribute("data-n",state.n);
+    var win={};winLines().forEach(function(l){l.forEach(function(i){win[i]=1;});});
+    state.cells.forEach(function(c,i){
+      var d=document.createElement("div");
+      d.className="cell"+(c?" on":"")+(win[i]?" win":"");
+      if(c){
+        var t=document.createElement("span");t.className="t";t.textContent=c.t;
+        var dt=document.createElement("span");dt.className="d";dt.textContent=label(c.d);
+        d.appendChild(t);d.appendChild(dt);
+      }
+      g.appendChild(d);
+    });
+    $("count").textContent=filled();$("total").textContent=total();$("rule-n").textContent=total();
+    $("done").textContent=state.done;$("lines").textContent=winLines().length;
+    $("size").value=String(state.n);
+  }
+
+  function add(){
+    var inp=$("task"),name=inp.value.trim();
+    if(!name){msg("課題名を入れてください。",true);inp.focus();return;}
+    if(state.cells.every(Boolean)){msg("このカードは完成しています。「新しいカードにする」を押してください。",true);return;}
+    var d=today();
+    var dup=state.cells.some(function(c){return c&&c.t===name&&c.d===d;});
+    if(dup){msg("「"+name+"」は今日もう塗りました。同じ課題は1日1マスまでです。別の課題なら塗れます。",true);return;}
+    var before=winLines().length;
+    var empty=[];state.cells.forEach(function(c,i){if(!c)empty.push(i);});
+    var idx=empty[Math.floor(Math.random()*empty.length)];
+    state.seq=(state.seq||0)+1;
+    state.cells[idx]={t:name,d:d,s:state.seq};
+    inp.value="";
+    var after=winLines().length,n=filled();
+    if(n===total()){
+      state.done+=1;
+      msg("カード完成。「新しいカードにする」で次へ。");
+    }else if(after>before){
+      msg("1列そろった。");
+    }else{
+      msg("「"+name+"」に着手。あと"+(total()-n)+"マスで1枚完成。");
+    }
+    save();render();
+  }
+
+  function reset(n){state.n=n;state.cells=Array(n*n).fill(null);}
+
+  $("form").addEventListener("submit",add);
+  $("go").addEventListener("click",function(e){e.preventDefault();add();});
+  $("undo").addEventListener("click",function(){
+    var last=-1,best=-1;
+    state.cells.forEach(function(c,i){if(c&&(c.s||0)>=best){best=c.s||0;last=i;}});
+    if(last<0){msg("消せるマスがありません。",true);return;}
+    var wasFull=state.cells.every(Boolean);
+    state.cells[last]=null;
+    if(wasFull&&state.done>0)state.done-=1;
+    msg("直前のマスを消しました。");save();render();
+  });
+  $("newcard").addEventListener("click",function(){
+    var n=filled();
+    if(n>0&&n<total()&&!confirm("まだ"+n+"マス塗ってあります。新しいカードにしますか?"))return;
+    reset(state.n);msg("新しいカードです。最初の1マスを塗りましょう。");save();render();
+  });
+  $("size").addEventListener("change",function(e){
+    var m=parseInt(e.target.value,10),n=filled();
+    if(n>0&&n<total()&&!confirm("マスの数を変えると、今のカードの"+n+"マスは消えます。変えますか?")){e.target.value=String(state.n);return;}
+    reset(m);msg(m+"×"+m+"のカードにしました。最初の1マスを塗りましょう。");save();render();
+  });
+  render();
+})();
+</script>
+</body>
+</html>
