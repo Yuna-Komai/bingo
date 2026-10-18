@@ -5,170 +5,407 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>着手ビンゴ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f4f6f8;--ink:#1b2433;--sub:#5b6677;--line:#c9d2de;--hl:#ffe066;--hl-ink:#1b2433;--acc:#2f5fd0;--card:#ffffff;--err:#b3261e}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161d;--ink:#e8ecf2;--sub:#97a2b3;--line:#2b3442;--hl:#e3c548;--hl-ink:#14181f;--acc:#7da2ff;--card:#1a202a;--err:#ff8a80}}
-:root[data-theme="dark"]{--bg:#12161d;--ink:#e8ecf2;--sub:#97a2b3;--line:#2b3442;--hl:#e3c548;--hl-ink:#14181f;--acc:#7da2ff;--card:#1a202a;--err:#ff8a80}
+:root{--bg:#eaf4fb;--ink:#12304f;--sub:#4a6683;--line:#c6dbec;--card:#ffffff;--pink:#8fcdf7;--yel:#a8e6e8;--mint:#b5e9d8;--hi:#aab6ff;--acc:#2f6fe4;--on:#12304f;--mark:#bfe3fb;--err:#b3261e;--errfg:#ffffff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1a2b;--ink:#e6f1ff;--sub:#9db6d3;--line:#25405e;--card:#14263c;--pink:#5aa9e6;--yel:#7fd6dc;--mint:#6fcfb3;--hi:#8d9cf5;--acc:#7fb2ff;--on:#12304f;--mark:#1f4c74;--err:#ff9a93;--errfg:#0e1a2b}}
+:root[data-theme="dark"]{--bg:#0e1a2b;--ink:#e6f1ff;--sub:#9db6d3;--line:#25405e;--card:#14263c;--pink:#5aa9e6;--yel:#7fd6dc;--mint:#6fcfb3;--hi:#8d9cf5;--acc:#7fb2ff;--on:#12304f;--mark:#1f4c74;--err:#ff9a93;--errfg:#0e1a2b}
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;line-height:1.6}
-main{max-width:440px;margin:0 auto;padding:20px 16px 40px}
-h1{font-size:28px;font-weight:900;margin:0 0 2px;letter-spacing:.02em}
-.lead{margin:0 0 18px;color:var(--sub);font-size:14px}
-.stat{display:flex;gap:16px;font-size:14px;color:var(--sub);margin-bottom:12px}
-.stat b{color:var(--ink);font-size:18px}
-.grid{display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:6px;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:14px 14px;padding:6px;border:2px solid var(--ink);border-radius:6px;background-color:var(--card)}
-.cell{aspect-ratio:1;border:2px solid var(--line);border-radius:4px;background:var(--card);padding:6px;display:flex;flex-direction:column;justify-content:space-between;font-size:13px;line-height:1.35;overflow:hidden;word-break:break-all}
-.cell.on{background:linear-gradient(transparent 12%,var(--hl) 12%,var(--hl) 88%,transparent 88%),var(--card);color:var(--hl-ink);border-color:var(--ink);font-weight:700;animation:pop .25s ease-out}
-.cell.win{outline:3px solid var(--acc);outline-offset:1px}
-.cell .d{font-size:11px;font-weight:400;opacity:.8}
-.cell .t{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.grid[data-n="4"] .cell{font-size:12px;padding:5px}
-.grid[data-n="5"] .cell,.grid[data-n="6"] .cell{font-size:10.5px;padding:3px;border-width:1.5px}
-.grid[data-n="5"] .cell .d,.grid[data-n="6"] .cell .d{font-size:9px}
-.grid[data-n="6"] .cell{font-size:9.5px;padding:2px}
-.size{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:14px}
-.size label{margin:0}
-select{font:inherit;font-size:16px;padding:8px 10px;border:2px solid var(--ink);border-radius:6px;background:var(--card);color:var(--ink)}
-@keyframes pop{from{transform:scale(.88)}to{transform:scale(1)}}
-@media (prefers-reduced-motion:reduce){.cell.on{animation:none}}
-.msg{min-height:3.2em;margin:14px 0 4px;padding:10px 12px;border-radius:6px;background:var(--card);border-left:4px solid var(--acc);font-size:14px}
-.msg.err{border-left-color:var(--err);color:var(--err)}
-.row{display:flex;gap:8px;margin-top:10px}
-input[type=text]{flex:1;min-width:0;font:inherit;font-size:16px;padding:11px 12px;border:2px solid var(--ink);border-radius:6px;background:var(--card);color:var(--ink)}
-button{font:inherit;font-weight:700;cursor:pointer;border-radius:6px;border:2px solid var(--ink);padding:11px 16px;background:var(--hl);color:var(--hl-ink)}
-button.ghost{background:transparent;color:var(--ink);border-color:var(--line);font-weight:400;font-size:14px;padding:8px 12px}
-:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-.tools{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-details{margin-top:22px;border-top:1px solid var(--line);padding-top:12px}
-summary{cursor:pointer;font-weight:700}
+body{margin:0;background:radial-gradient(var(--line) 1.4px,transparent 1.6px) 0 0/20px 20px,var(--bg);color:var(--ink);font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic",sans-serif;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:22px 16px 100px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:4px 24px;margin-bottom:18px}
+h1{font-size:30px;font-weight:900;margin:0;letter-spacing:.04em}
+h1 span{background:linear-gradient(transparent 58%,var(--mark) 58%);padding:0 6px}
+.lead{margin:0;color:var(--sub);font-size:14px;flex-basis:100%}
+h2{font-size:18px;font-weight:900;margin:0 0 8px}
+h3{font-size:15px;font-weight:900;margin:22px 0 8px}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;gap:6px;background:var(--card);border-top:2px solid var(--ink);padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;border:2px solid transparent;background:transparent;color:var(--sub);box-shadow:none;padding:9px 4px;font-size:14px}
+nav button[aria-current="page"]{background:var(--pink);color:var(--on);border-color:var(--ink)}
+@media (min-width:760px){
+ nav{position:static;border:0;background:none;padding:0;margin-left:auto}
+ nav button{flex:none;padding:8px 20px;border-color:var(--line)}
+ nav button[aria-current="page"]{border-color:var(--ink)}
+ .wrap{padding-bottom:40px}
+ .lead{order:3}
+}
+.cols{display:grid;gap:18px}
+@media (min-width:900px){.cols{grid-template-columns:320px 1fr;align-items:start}}
+.panel{background:var(--card);border:2px solid var(--ink);border-radius:22px;padding:18px;box-shadow:5px 5px 0 var(--line)}
 label{display:block;margin-top:12px;font-size:14px;color:var(--sub)}
-.rules{margin:10px 0 0;padding-left:1.2em;font-size:14px;color:var(--sub)}
+input[type=text],input[type=date],select{width:100%;font:inherit;font-size:16px;padding:10px 14px;border:2px solid var(--ink);border-radius:14px;background:var(--card);color:var(--ink)}
+button{font:inherit;font-weight:700;cursor:pointer;border-radius:99px;border:2px solid var(--ink);padding:11px 18px;background:var(--pink);color:var(--on);box-shadow:0 3px 0 var(--ink)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+button.pri{width:100%;margin-top:18px}
+button:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line);font-weight:500;font-size:14px;padding:6px 14px;box-shadow:none}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.hint{margin:8px 0 0;font-size:14px;color:var(--sub)}
+.hint.err,.msg.err{color:var(--err)}
+.bar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:8px}
+.bar select{width:auto;font-size:14px;padding:6px 10px}
+ul.list{list-style:none;margin:0;padding:0}
+.task{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:2px dashed var(--line)}
+.task input,.pick input{width:22px;height:22px;flex:none;accent-color:var(--acc)}
+.task.dn .tt{text-decoration:line-through;color:var(--sub)}
+.tm{flex:1;min-width:0}
+.tt{font-weight:700;word-break:break-all}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px;font-size:12px;color:var(--sub)}
+.b{border:1.5px solid var(--line);border-radius:99px;padding:0 9px}
+.b.p3{background:var(--hi);border-color:var(--ink);color:var(--on)}
+.b.p2{background:var(--pink);border-color:var(--ink);color:var(--on)}
+.b.p1{background:var(--mint);border-color:var(--ink);color:var(--on)}
+.b.urg{background:var(--err);border-color:var(--err);color:var(--errfg);font-weight:700}
+.stat{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:14px;color:var(--sub);margin-bottom:12px}
+.stat b{color:var(--ink);font-size:20px}
+.stage{max-width:560px;margin:0 auto}
+.grid{display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:7px;background:radial-gradient(var(--line) 1.2px,transparent 1.4px) 0 0/12px 12px,var(--card);padding:8px;border:2px solid var(--ink);border-radius:22px;box-shadow:5px 5px 0 var(--line)}
+.cell{position:relative;aspect-ratio:1;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:16px 6px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;font-size:13px;font-weight:500;line-height:1.35;overflow:hidden;word-break:break-all;box-shadow:none}
+.cell.on{background:var(--yel);color:var(--on);border-color:var(--ink);font-weight:700;animation:pop .3s ease-out}
+.cell.on:nth-child(3n+1){transform:rotate(-1.6deg)}
+.cell.on:nth-child(3n+2){transform:rotate(1.2deg)}
+.cell.on::after{content:"";position:absolute;right:5px;top:5px;width:13px;height:13px;border-radius:50%;background:var(--acc);border:2px solid var(--on)}
+.cell.win{outline:3px solid var(--acc);outline-offset:2px}
+.cell .d{position:absolute;left:0;right:0;bottom:4px;text-align:center;font-size:11px;font-weight:400;opacity:.85}
+.cell .t{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.grid[data-n="4"] .cell{font-size:12px;padding:14px 5px}
+.grid[data-n="5"] .cell,.grid[data-n="6"] .cell{font-size:10.5px;padding:11px 3px;border-width:1.5px;border-radius:10px}
+.grid[data-n="5"] .cell .d,.grid[data-n="6"] .cell .d{font-size:9px;bottom:2px}
+.grid[data-n="6"] .cell{font-size:9.5px;padding:10px 2px}
+.grid.mini{padding:4px;gap:3px;background:var(--card);box-shadow:none;border-radius:14px}
+.grid.mini .cell .d{display:none}
+.grid.mini .cell{padding:2px;font-size:9px;border-width:1px;border-radius:6px;animation:none;cursor:default;transform:none}
+.grid.mini .cell::after{display:none}
+@keyframes pop{from{scale:.85}to{scale:1}}
+@media (prefers-reduced-motion:reduce){.cell.on{animation:none}}
+.msg{min-height:3.2em;margin:16px 0 4px;padding:10px 14px;border-radius:14px;background:var(--card);border:2px solid var(--line);border-left:6px solid var(--pink);font-size:14px}
+.msg.err{border-left-color:var(--err)}
+.tools{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.pick{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:2px dashed var(--line)}
+.chart{display:flex;align-items:flex-end;gap:8px;height:140px;padding:8px 4px 0;border-bottom:2px solid var(--ink)}
+.chart div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:12px}
+.chart i{display:block;width:100%;max-width:44px;background:var(--pink);border:2px solid var(--ink);border-bottom:0;border-radius:10px 10px 0 0;min-height:4px}
+.chart.x{border:0;height:auto;padding:4px;font-size:12px;color:var(--sub)}
+.chart.x span{flex:1;text-align:center}
+details.h{border-top:2px dashed var(--line);padding:10px 0}
+details.h summary{cursor:pointer;font-weight:700}
+.lg{padding:4px 0 4px 10px;font-size:14px;border-left:4px solid var(--yel)}
+.empty{color:var(--sub);font-size:14px;padding:8px 0}
+.sv{margin:22px 0 0;text-align:center;font-size:12px;color:var(--sub)}
 </style>
 </head>
 <body>
-<main>
-  <h1>着手ビンゴ</h1>
-  <p class="lead">終わらなくてOK。課題に手をつけたら1マス塗る。</p>
-
-  <div class="stat"><span>今のカード <b id="count">0</b>/<span id="total">9</span>マス</span><span>完成したカード <b id="done">0</b>枚</span><span>そろった列 <b id="lines">0</b></span></div>
-
-  <div class="size"><label for="size">マスの数</label>
-    <select id="size"><option value="2">2×2(4マス)</option><option value="3">3×3(9マス)</option><option value="4">4×4(16マス)</option><option value="5">5×5(25マス)</option><option value="6">6×6(36マス)</option></select>
-  </div>
-
-  <div class="grid" id="grid" aria-label="ビンゴカード"></div>
-
-  <div class="msg" id="msg" role="status" aria-live="polite">課題名を入れて「着手した」を押すと、マスが塗れます。</div>
-
-  <form class="row" id="form" onsubmit="return false">
-    <input type="text" id="task" placeholder="何に着手した?(例:レポート)" maxlength="30" autocomplete="off" aria-label="着手した課題名">
-    <button type="submit" id="go">着手した</button>
-  </form>
-
-  <div class="tools">
-    <button class="ghost" id="undo" type="button">直前の1マスを消す</button>
-    <button class="ghost" id="newcard" type="button">新しいカードにする</button>
-  </div>
-
-  <details>
-    <summary>ルール</summary>
-    <ul class="rules">
-      <li>同じ課題は1日1マスまで。別の課題なら同じ日に何マスでも塗れます。</li>
-      <li><span id="rule-n">9</span>マスすべて埋まったら1枚完成。期間は決めません。</li>
-    </ul>
-  </details>
-</main>
+<div class="wrap">
+  <header>
+    <h1><span>着手ビンゴ</span></h1>
+    <nav id="nav" aria-label="画面の切り替え">
+      <button type="button" data-tab="tasks">📝 課題</button>
+      <button type="button" data-tab="bingo">🎯 ビンゴ</button>
+      <button type="button" data-tab="rec">📒 記録</button>
+    </nav>
+    <p class="lead">終わらなくてOK。課題に手をつけたら1マス塗る。</p>
+  </header>
+  <main id="view"></main>
+  <div class="sv"><span id="sv" role="status"></span><br><button type="button" class="ghost" id="login" hidden style="margin-top:8px">Googleでログインして同期する</button></div>
+</div>
 
 <script>
 (function(){
-  var KEY="chakushu-bingo-v1";
-  var state={n:3,cells:Array(9).fill(null),done:0,seq:0};
-  try{var s=localStorage.getItem(KEY);if(s){var p=JSON.parse(s);if(p&&p.cells){var pn=p.n||3;if(pn>=2&&pn<=6&&p.cells.length===pn*pn){state=p;state.n=pn;}}}}catch(e){}
+  /* GitHubで公開して端末間で自動同期するときは、Firebaseの設定値をここに入れる(空なら無効) */
+  var FIREBASE_CONFIG={apiKey:"",authDomain:"",projectId:"",appId:""};
+  var KEY="chakushu-bingo-v2";
+  var S={tasks:[],card:null,hist:[],log:[],seq:0,done:0};
+  try{var r=JSON.parse(localStorage.getItem(KEY));if(r&&r.tasks)S=r;}catch(e){}
+  var ui={tab:"tasks",sort:"due",n:3,sel:null,msg:"",err:false,th:"",the:false};
+  var PRI=["","低","中","高"];
   var $=function(id){return document.getElementById(id)};
-  function total(){return state.n*state.n;}
-  function lines(){
-    var n=state.n,L=[],i,j,a,b,d1=[],d2=[];
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  var DOC=null,saving=false,dirty=false,timer=null;
+  function setSv(t){var e=$("sv");if(e)e.textContent=t}
+  function local(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+  function flush(){
+    if(!DOC||saving||!dirty)return;
+    saving=true;dirty=false;
+    DOC.set({u:S.u,json:JSON.stringify(S)}).then(function(){setSv("アカウントに自動保存しています。閉じても消えません。")},function(){setSv("アカウントへの保存に失敗しました。このブラウザには保存してあります。")}).then(function(){saving=false;if(dirty)flush();});
+  }
+  function save(){S.u=Date.now();local();if(DOC){dirty=true;clearTimeout(timer);timer=setTimeout(flush,400);}}
+  function pull(){
+    if(!DOC)return;
+    DOC.get().then(function(sn){
+      var d=sn.exists?sn.data():null;
+      if(d&&d.json&&d.u>(S.u||0)){
+        try{var r=JSON.parse(d.json);if(r&&r.tasks){S=r;local();render();}}catch(e){}
+      }else if(!d||d.u<(S.u||0)){dirty=true;flush();}
+    }).catch(function(){});
+  }
+  function pad(n){return n<10?"0"+n:""+n}
+  function ymd(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+  function today(){return ymd(new Date())}
+  function dt(s){return new Date(s+"T00:00:00")}
+  function md(s){var a=s.split("-");return +a[1]+"/"+ +a[2]}
+  function wd(s){return "日月火水木金土".charAt(dt(s).getDay())}
+  function daysTo(s){return Math.round((dt(s)-dt(today()))/864e5)}
+  function dueText(s){
+    if(!s)return {t:"期限なし",u:false};
+    var d=daysTo(s);
+    if(d<0)return {t:"期限切れ("+(-d)+"日)",u:true};
+    if(d===0)return {t:"今日まで",u:true};
+    return {t:md(s)+"まで(あと"+d+"日)",u:d<=2};
+  }
+  function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+  function cmp(mode){
+    return function(a,b){
+      if(a.done!==b.done)return a.done?1:-1;
+      var ad=a.due||"9999",bd=b.due||"9999";
+      if(mode==="pri"){if(a.pri!==b.pri)return b.pri-a.pri;return ad<bd?-1:ad>bd?1:0;}
+      if(ad!==bd)return ad<bd?-1:1;
+      return b.pri-a.pri;
+    };
+  }
+  function activeCard(){return S.card&&!S.card.complete?S.card:null}
+  function inCard(){var m={};if(activeCard())S.card.cells.forEach(function(c){m[c.tid]=1});return m}
+  function lines(n){
+    var L=[],i,j,a,b,d1=[],d2=[];
     for(i=0;i<n;i++){a=[];b=[];for(j=0;j<n;j++){a.push(i*n+j);b.push(j*n+i);}L.push(a,b);d1.push(i*n+i);d2.push(i*n+(n-1-i));}
     L.push(d1,d2);return L;
   }
-  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
-  function today(){var d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
-  function label(k){var a=k.split("-");return a[1]+"/"+a[2];}
-  function filled(){return state.cells.filter(Boolean).length;}
-  function winLines(){return lines().filter(function(l){return l.every(function(i){return state.cells[i];});});}
-  function msg(t,err){var m=$("msg");m.textContent=t;m.className="msg"+(err?" err":"");}
+  function winLines(c){return lines(c.n).filter(function(l){return l.every(function(i){return c.cells[i].on})})}
+  function filled(c){return c.cells.filter(function(x){return x.on}).length}
+
+  /* ---------- 課題 ---------- */
+  function vTasks(){
+    var inc=inCard(),list=S.tasks.slice().sort(cmp(ui.sort));
+    var open=list.filter(function(t){return !t.done}).length;
+    var h='<div class="cols"><section class="panel"><h2>課題を登録</h2>'+
+      '<form id="tf"><label for="tn">課題の名前</label><input type="text" id="tn" maxlength="30" autocomplete="off">'+
+      '<label for="td">期限</label><input type="date" id="td">'+
+      '<label for="tp">優先度</label><select id="tp"><option value="3">高</option><option value="2" selected>中</option><option value="1">低</option></select>'+
+      '<button type="submit" class="pri">登録する</button></form>'+
+      '<p class="hint'+(ui.the?' err':'')+'" role="status">'+esc(ui.th||"課題を登録したら、右の一覧で整理できます。")+'</p></section>'+
+      '<section class="panel"><div class="bar"><h2 style="margin:0">課題の一覧(未完了 '+open+'件)</h2>'+
+      '<select id="sort" aria-label="並び順"><option value="due"'+(ui.sort==="due"?" selected":"")+'>期限が近い順</option><option value="pri"'+(ui.sort==="pri"?" selected":"")+'>優先度が高い順</option></select></div>';
+    if(!list.length)h+='<p class="empty">まだ課題がありません。左のフォームから登録してください。</p>';
+    else{
+      h+='<ul class="list">';
+      list.forEach(function(t){
+        var d=dueText(t.done?"":t.due);
+        h+='<li class="task'+(t.done?' dn':'')+'"><input type="checkbox" data-a="done" data-id="'+t.id+'"'+(t.done?' checked':'')+' aria-label="「'+esc(t.name)+'」を完了にする">'+
+          '<div class="tm"><div class="tt">'+esc(t.name)+'</div><div class="meta"><span class="b p'+t.pri+'">優先度 '+PRI[t.pri]+'</span>'+
+          '<span class="b'+(d.u&&!t.done?' urg':'')+'">'+esc(t.due&&t.done?md(t.due)+"まで":d.t)+'</span>'+(inc[t.id]?'<span class="b">カード中</span>':'')+'</div></div>'+
+          '<button type="button" class="ghost" data-a="del" data-id="'+t.id+'">削除</button></li>';
+      });
+      h+='</ul>';
+    }
+    if(open>=4)h+='<button type="button" class="pri" data-a="gobingo">この課題でビンゴを作る</button>';
+    else if(list.length)h+='<p class="hint">ビンゴは未完了の課題が4つ以上で作れます。</p>';
+    return h+'</section></div>';
+  }
+
+  /* ---------- ビンゴ ---------- */
+  function gridHtml(c,mini){
+    var win={};winLines(c).forEach(function(l){l.forEach(function(i){win[i]=1})});
+    var h='<div class="grid'+(mini?' mini':'')+'" style="--n:'+c.n+'" data-n="'+c.n+'">';
+    c.cells.forEach(function(x,i){
+      var sub=x.on?md(x.on):(x.due?md(x.due)+"まで":"");
+      h+='<button type="button" class="cell'+(x.on?' on':'')+(win[i]&&!mini?' win':'')+'" data-a="cell" data-i="'+i+'"'+(mini?' tabindex="-1" aria-hidden="true"':' aria-pressed="'+(x.on?'true':'false')+'"')+'>'+
+        '<span class="t">'+esc(x.t)+'</span><span class="d">'+esc(sub)+'</span></button>';
+    });
+    return h+'</div>';
+  }
+  function avail(){var inc=inCard();return S.tasks.filter(function(t){return !t.done&&!inc[t.id]}).sort(cmp("due"))}
+  function autosel(){
+    var a=avail(),n=ui.n*ui.n;ui.sel={};
+    a.slice(0,n).forEach(function(t){ui.sel[t.id]=1});
+  }
+  function vBingo(){
+    var c=S.card;
+    if(c){
+      var n=filled(c),tot=c.n*c.n;
+      return '<div class="stage"><div class="stat"><span>今のカード <b>'+n+'</b>/'+tot+'マス</span><span>完成したカード <b>'+S.done+'</b>枚</span><span>そろった列 <b>'+winLines(c).length+'</b></span></div>'+
+        gridHtml(c,false)+
+        '<div class="msg'+(ui.err?' err':'')+'" role="status" aria-live="polite">'+esc(ui.msg||"塗りたいマスの課題に手をつけたら、そのマスをタップ。")+'</div>'+
+        '<div class="tools"><button type="button" class="ghost" data-a="undo">直前の1マスを消す</button>'+
+        '<button type="button" class="ghost" data-a="newcard">新しいカードにする</button></div><p class="hint">「新しいカードにする」を押すと、塗った課題は課題リストから消えます。記録には残ります。</p></div>';
+    }
+    var a=avail();
+    if(a.length<4)return '<section class="panel stage"><h2>ビンゴカードを作る</h2><p class="hint">カードには未完了の課題が4つ以上必要です(いま'+a.length+'件)。まず課題を登録してください。</p><button type="button" class="pri" data-a="gotasks">課題の画面へ</button></section>';
+    var max=Math.min(6,Math.floor(Math.sqrt(a.length)));
+    if(ui.n>max)ui.n=max;
+    if(!ui.sel)autosel();
+    var need=ui.n*ui.n,cnt=a.filter(function(t){return ui.sel[t.id]}).length;
+    var h='<section class="panel stage"><h2>ビンゴカードを作る</h2><p class="hint" style="margin:0">登録した課題から選んで、カードに並べます。並びはランダムです。</p>'+
+      '<label for="size">マスの数</label><select id="size">';
+    for(var k=2;k<=max;k++)h+='<option value="'+k+'"'+(k===ui.n?' selected':'')+'>'+k+'×'+k+'('+k*k+'マス)</option>';
+    h+='</select><div class="bar" style="margin-top:14px"><b>選んだ課題 '+cnt+'/'+need+'</b><button type="button" class="ghost" data-a="auto">期限と優先度で自動選択</button></div>';
+    a.forEach(function(t){
+      var d=dueText(t.due);
+      h+='<label class="pick" style="margin:0;color:var(--ink)"><input type="checkbox" data-a="pick" data-id="'+t.id+'"'+(ui.sel[t.id]?' checked':'')+'><span class="tm"><span class="tt">'+esc(t.name)+'</span><span class="meta"><span class="b p'+t.pri+'">優先度 '+PRI[t.pri]+'</span><span class="b">'+esc(d.t)+'</span></span></span></label>';
+    });
+    h+='<button type="button" class="pri" data-a="make"'+(cnt===need?'':' disabled')+'>'+(cnt===need?'このカードを作る':need+'個にそろえてください')+'</button></section>';
+    return h;
+  }
+
+  /* ---------- 記録 ---------- */
+  function vRec(){
+    var days=[],i,d,cnt={};
+    S.log.forEach(function(l){cnt[l.d]=(cnt[l.d]||0)+1});
+    for(i=6;i>=0;i--){d=new Date();d.setDate(d.getDate()-i);days.push(ymd(d))}
+    var mx=Math.max(1,Math.max.apply(null,days.map(function(x){return cnt[x]||0})));
+    var h='<div class="cols"><section class="panel"><h2>最近7日の着手数</h2><div class="stat"><span>着手した回数 <b>'+S.log.length+'</b></span><span>完成したカード <b>'+S.hist.length+'</b>枚</span></div>'+
+      '<div class="chart" role="img" aria-label="最近7日の着手数">';
+    days.forEach(function(x){var v=cnt[x]||0;h+='<div><span>'+v+'</span><i style="height:'+Math.round(v/mx*100*0.8)+'%'+(v?'':';visibility:hidden')+'"></i></div>'});
+    h+='</div><div class="chart x">';
+    days.forEach(function(x){h+='<span>'+md(x)+'</span>'});
+    h+='</div><h3>完成したカード</h3>';
+    if(!S.hist.length)h+='<p class="empty">まだ完成したカードはありません。</p>';
+    S.hist.slice().reverse().forEach(function(c){
+      h+='<details class="h"><summary>'+md(c.fin)+'に完成('+c.n+'×'+c.n+')</summary><p class="hint">作成日 '+md(c.made)+'</p>'+gridHtml(c,true)+'</details>';
+    });
+    h+='</section><section class="panel"><h2>着手の記録</h2>';
+    if(!S.log.length)h+='<p class="empty">まだ記録がありません。ビンゴで1マス塗ると、ここに残ります。</p>';
+    var byDay={},order=[];
+    S.log.forEach(function(l){if(!byDay[l.d]){byDay[l.d]=[];order.push(l.d)}byDay[l.d].push(l.t)});
+    order.sort().reverse().forEach(function(x){
+      h+='<h3>'+md(x)+'('+wd(x)+') '+byDay[x].length+'件</h3>';
+      byDay[x].forEach(function(t){h+='<div class="lg">'+esc(t)+'</div>'});
+    });
+    return h+'</section></div>';
+  }
 
   function render(){
-    var g=$("grid");g.textContent="";
-    g.style.setProperty("--n",state.n);g.setAttribute("data-n",state.n);
-    var win={};winLines().forEach(function(l){l.forEach(function(i){win[i]=1;});});
-    state.cells.forEach(function(c,i){
-      var d=document.createElement("div");
-      d.className="cell"+(c?" on":"")+(win[i]?" win":"");
-      if(c){
-        var t=document.createElement("span");t.className="t";t.textContent=c.t;
-        var dt=document.createElement("span");dt.className="d";dt.textContent=label(c.d);
-        d.appendChild(t);d.appendChild(dt);
-      }
-      g.appendChild(d);
+    var v=$("view");
+    v.innerHTML=ui.tab==="tasks"?vTasks():ui.tab==="bingo"?vBingo():vRec();
+    Array.prototype.forEach.call($("nav").children,function(b){
+      if(b.getAttribute("data-tab")===ui.tab)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");
     });
-    $("count").textContent=filled();$("total").textContent=total();$("rule-n").textContent=total();
-    $("done").textContent=state.done;$("lines").textContent=winLines().length;
-    $("size").value=String(state.n);
   }
+  function go(t){ui.tab=t;ui.msg="";ui.err=false;render();window.scrollTo(0,0)}
 
-  function add(){
-    var inp=$("task"),name=inp.value.trim();
-    if(!name){msg("課題名を入れてください。",true);inp.focus();return;}
-    if(state.cells.every(Boolean)){msg("このカードは完成しています。「新しいカードにする」を押してください。",true);return;}
-    var d=today();
-    var dup=state.cells.some(function(c){return c&&c.t===name&&c.d===d;});
-    if(dup){msg("「"+name+"」は今日もう塗りました。同じ課題は1日1マスまでです。別の課題なら塗れます。",true);return;}
-    var before=winLines().length;
-    var empty=[];state.cells.forEach(function(c,i){if(!c)empty.push(i);});
-    var idx=empty[Math.floor(Math.random()*empty.length)];
-    state.seq=(state.seq||0)+1;
-    state.cells[idx]={t:name,d:d,s:state.seq};
-    inp.value="";
-    var after=winLines().length,n=filled();
-    if(n===total()){
-      state.done+=1;
-      msg("カード完成。「新しいカードにする」で次へ。");
-    }else if(after>before){
-      msg("1列そろった。");
-    }else{
-      msg("「"+name+"」に着手。あと"+(total()-n)+"マスで1枚完成。");
-    }
+  /* ---------- 操作 ---------- */
+  function paint(i){
+    var c=activeCard();
+    if(!c)return;
+    var x=c.cells[i];
+    if(x.on){ui.msg="「"+x.t+"」はもう塗ってあります。間違えたときは「直前の1マスを消す」を押してください。";ui.err=true;render();return;}
+    var before=winLines(c).length;
+    x.on=today();x.s=++S.seq;S.log.push({d:x.on,t:x.t,s:x.s});
+    var after=winLines(c).length,n=filled(c),tot=c.n*c.n;ui.err=false;
+    if(n===tot){
+      c.complete=true;S.done+=1;
+      S.hist.push({id:c.id,n:c.n,made:c.made,fin:today(),cells:c.cells.map(function(y){return {t:y.t,on:y.on,due:y.due}})});
+      ui.msg="カード完成。「新しいカードにする」で次へ。塗った課題は課題リストから消えます(記録には残ります)。";
+    }else if(after>before)ui.msg="1列そろった。";
+    else ui.msg="「"+x.t+"」に着手。あと"+(tot-n)+"マスで1枚完成。";
     save();render();
   }
+  function undo(){
+    var c=S.card;if(!c)return;
+    var last=null;
+    c.cells.forEach(function(x){if(x.on&&(!last||x.s>=last.s))last=x});
+    if(!last){ui.msg="消せるマスがありません。";ui.err=true;render();return;}
+    if(c.complete){c.complete=false;S.done=Math.max(0,S.done-1);S.hist=S.hist.filter(function(h){return h.id!==c.id})}
+    S.log=S.log.filter(function(l){return l.s!==last.s});
+    last.on=null;last.s=0;ui.msg="直前のマスを消しました。";ui.err=false;save();render();
+  }
+  function newcard(){
+    var c=S.card;
+    if(c&&!c.complete&&filled(c)>0&&!confirm("まだ"+filled(c)+"マス塗ってあります。新しいカードにすると、塗った"+filled(c)+"件の課題は課題リストから消えます(記録には残ります)。よろしいですか?"))return;
+    if(c){var pd={};c.cells.forEach(function(x){if(x.on)pd[x.tid]=1});S.tasks=S.tasks.filter(function(t){return !pd[t.id]});}
+    S.card=null;ui.sel=null;ui.msg="";save();render();
+  }
+  function make(){
+    var a=avail().filter(function(t){return ui.sel[t.id]}),n=ui.n;
+    if(a.length!==n*n)return;
+    for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}
+    S.card={id:uid(),n:n,made:today(),complete:false,cells:a.map(function(t){return {tid:t.id,t:t.name,due:t.due,on:null,s:0}})};
+    ui.msg="カードができました。着手した課題のマスをタップして塗りましょう。";ui.err=false;save();render();
+  }
 
-  function reset(n){state.n=n;state.cells=Array(n*n).fill(null);}
-
-  $("form").addEventListener("submit",add);
-  $("go").addEventListener("click",function(e){e.preventDefault();add();});
-  $("undo").addEventListener("click",function(){
-    var last=-1,best=-1;
-    state.cells.forEach(function(c,i){if(c&&(c.s||0)>=best){best=c.s||0;last=i;}});
-    if(last<0){msg("消せるマスがありません。",true);return;}
-    var wasFull=state.cells.every(Boolean);
-    state.cells[last]=null;
-    if(wasFull&&state.done>0)state.done-=1;
-    msg("直前のマスを消しました。");save();render();
+    document.addEventListener("submit",function(e){
+    e.preventDefault();
+    if(e.target.id!=="tf")return;
+    var name=$("tn").value.trim();
+    if(!name){ui.th="課題の名前を入れてください。";ui.the=true;render();$("tn").focus();return;}
+    S.tasks.push({id:uid(),name:name,due:$("td").value||"",pri:parseInt($("tp").value,10),done:false});
+    ui.th="「"+name+"」を登録しました。";ui.the=false;ui.sel=null;save();render();$("tn").focus();
   });
-  $("newcard").addEventListener("click",function(){
-    var n=filled();
-    if(n>0&&n<total()&&!confirm("まだ"+n+"マス塗ってあります。新しいカードにしますか?"))return;
-    reset(state.n);msg("新しいカードです。最初の1マスを塗りましょう。");save();render();
+  document.addEventListener("click",function(e){
+    var tb=e.target.closest("[data-tab]");
+    if(tb){go(tb.getAttribute("data-tab"));return;}
+    var b=e.target.closest("[data-a]");
+    if(!b||b.tagName==="INPUT")return;
+    var a=b.getAttribute("data-a"),id=b.getAttribute("data-id");
+    if(a==="cell"){if(!b.closest(".mini"))paint(+b.getAttribute("data-i"));}
+    else if(a==="undo")undo();
+    else if(a==="newcard")newcard();
+    else if(a==="gobingo")go("bingo");
+    else if(a==="gotasks")go("tasks");
+    else if(a==="auto"){autosel();render();}
+    else if(a==="make")make();
+    else if(a==="del"){
+      if(inCard()[id]){ui.th="カード中の課題は削除できません。";ui.the=true;render();return;}
+      S.tasks=S.tasks.filter(function(t){return t.id!==id});ui.th="";ui.sel=null;save();render();
+    }
   });
-  $("size").addEventListener("change",function(e){
-    var m=parseInt(e.target.value,10),n=filled();
-    if(n>0&&n<total()&&!confirm("マスの数を変えると、今のカードの"+n+"マスは消えます。変えますか?")){e.target.value=String(state.n);return;}
-    reset(m);msg(m+"×"+m+"のカードにしました。最初の1マスを塗りましょう。");save();render();
+  document.addEventListener("change",function(e){
+    var t=e.target,a=t.getAttribute("data-a");
+    if(a==="done"){S.tasks.forEach(function(x){if(x.id===t.getAttribute("data-id"))x.done=t.checked});ui.sel=null;save();render();}
+    else if(a==="pick"){ui.sel[t.getAttribute("data-id")]=t.checked?1:0;render();}
+    else if(t.id==="size"){ui.n=parseInt(t.value,10);autosel();render();}
+    else if(t.id==="sort"){ui.sort=t.value;render();}
   });
   render();
+  setSv("このブラウザに保存しています。");
+  try{
+    if(window.claude&&window.claude.use){
+      Promise.all([window.claude.use("db"),window.claude.use("user")]).then(function(a){
+        if(!a[0]||!a[1])return;
+        return a[1].id().then(function(id){
+          if(!id)return;
+          DOC=a[0].collection("data/users/"+id).doc("state");
+          setSv("アカウントに自動保存しています。閉じても消えません。");
+          pull();
+        });
+      }).catch(function(){});
+    }
+  }catch(e){}
+  function loadSeq(a,done){
+    if(!a.length){done();return;}
+    var t=document.createElement("script");t.src=a[0];
+    t.onload=function(){loadSeq(a.slice(1),done)};
+    t.onerror=function(){setSv("同期の部品を読み込めませんでした。このブラウザには保存してあります。")};
+    document.head.appendChild(t);
+  }
+  function startFirebase(){
+    var c=FIREBASE_CONFIG;
+    if(!c.apiKey||window.claude)return;
+    var B="https://www.gstatic.com/firebasejs/10.12.2/firebase-";
+    loadSeq([B+"app-compat.js",B+"auth-compat.js",B+"firestore-compat.js"],function(){
+      try{
+        firebase.initializeApp(c);
+        var auth=firebase.auth(),fs=firebase.firestore(),btn=$("login");
+        btn.onclick=function(){
+          auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function(){setSv("ログインできませんでした。もう一度試してください。")});
+        };
+        auth.onAuthStateChanged(function(u){
+          if(u){
+            btn.hidden=true;
+            DOC=fs.collection("users").doc(u.uid).collection("data").doc("state");
+            setSv("Googleアカウントで自動同期しています。");
+            pull();
+          }else{
+            DOC=null;btn.hidden=false;
+            setSv("ログインすると、端末をまたいで自動で同期されます(いまはこのブラウザだけに保存)。");
+          }
+        });
+      }catch(e){setSv("同期を始められませんでした。設定値を確認してください。");}
+    });
+  }
+  startFirebase();
+  window.addEventListener("online",pull);
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")pull();});
 })();
 </script>
 </body>
