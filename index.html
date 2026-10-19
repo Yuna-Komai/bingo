@@ -116,7 +116,7 @@ details.h summary{cursor:pointer;font-weight:700}
   /* GitHubで公開して端末間で自動同期するときは、Firebaseの設定値をここに入れる(空なら無効) */
   var FIREBASE_CONFIG={apiKey:"",authDomain:"",projectId:"",appId:""};
   var KEY="chakushu-bingo-v2";
-  var S={tasks:[],card:null,hist:[],log:[],seq:0,done:0};
+  var S={tasks:[],card:null,hist:[],log:[],seq:0,done:0,missed:0};
   try{var r=JSON.parse(localStorage.getItem(KEY));if(r&&r.tasks)S=r;}catch(e){}
   var ui={tab:"tasks",sort:"due",n:3,sel:null,msg:"",err:false,th:"",the:false};
   var PRI=["","低","中","高"];
@@ -155,6 +155,18 @@ details.h summary{cursor:pointer;font-weight:700}
     return {t:md(s)+"まで(あと"+d+"日)",u:d<=2};
   }
   function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+  /* 期限切れ: 期限を過ぎて未完了の課題。数を記録し、期限から7日たったら消す */
+  function expired(t){return !!t.due&&!t.done&&daysTo(t.due)<0}
+  function sweep(){
+    var ch=false,keep=[];
+    S.tasks.forEach(function(t){
+      if(expired(t)&&!t.missed){t.missed=true;S.missed=(S.missed||0)+1;ch=true;}
+      if(t.missed&&!t.done&&t.due&&daysTo(t.due)<-7){ch=true;return;}
+      keep.push(t);
+    });
+    if(keep.length!==S.tasks.length)S.tasks=keep;
+    return ch;
+  }
   function cmp(mode){
     return function(a,b){
       if(a.done!==b.done)return a.done?1:-1;
@@ -176,7 +188,7 @@ details.h summary{cursor:pointer;font-weight:700}
 
   /* ---------- 課題 ---------- */
   function vTasks(){
-    var inc=inCard(),list=S.tasks.slice().sort(cmp(ui.sort));
+    var inc=inCard(),all=S.tasks.slice().sort(cmp(ui.sort)),list=all.filter(function(t){return !expired(t)}),ex=all.filter(expired).sort(function(a,b){return a.due<b.due?1:-1});
     var open=list.filter(function(t){return !t.done}).length;
     var h='<div class="cols"><section class="panel"><h2>課題を登録</h2>'+
       '<form id="tf"><label for="tn">課題の名前</label><input type="text" id="tn" maxlength="30" autocomplete="off">'+
@@ -186,7 +198,7 @@ details.h summary{cursor:pointer;font-weight:700}
       '<p class="hint'+(ui.the?' err':'')+'" role="status">'+esc(ui.th||"課題を登録したら、右の一覧で整理できます。")+'</p></section>'+
       '<section class="panel"><div class="bar"><h2 style="margin:0">課題の一覧(未完了 '+open+'件)</h2>'+
       '<select id="sort" aria-label="並び順"><option value="due"'+(ui.sort==="due"?" selected":"")+'>期限が近い順</option><option value="pri"'+(ui.sort==="pri"?" selected":"")+'>優先度が高い順</option></select></div>';
-    if(!list.length)h+='<p class="empty">まだ課題がありません。左のフォームから登録してください。</p>';
+    if(!list.length)h+='<p class="empty">'+(ex.length?'期限内の課題はありません。':'まだ課題がありません。左のフォームから登録してください。')+'</p>';
     else{
       h+='<ul class="list">';
       list.forEach(function(t){
@@ -200,6 +212,16 @@ details.h summary{cursor:pointer;font-weight:700}
     }
     if(open>=4)h+='<button type="button" class="pri" data-a="gobingo">この課題でビンゴを作る</button>';
     else if(list.length)h+='<p class="hint">ビンゴは未完了の課題が4つ以上で作れます。</p>';
+    if(ex.length){
+      h+='<h3>期限切れの課題('+ex.length+'件)</h3><p class="hint" style="margin:0 0 4px">ビンゴには入りません。期限から7日たつと消えます。「期限までに終わらなかった課題」として、数は記録に残ります。</p><ul class="list">';
+      ex.forEach(function(t){
+        var n=daysTo(t.due);
+        h+='<li class="task"><input type="checkbox" data-a="done" data-id="'+t.id+'" aria-label="「'+esc(t.name)+'」を完了にする">'+
+          '<div class="tm"><div class="tt">'+esc(t.name)+'</div><div class="meta"><span class="b urg">期限切れ('+md(t.due)+'・'+(-n)+'日前)</span><span class="b">あと'+(n+8)+'日で消えます</span>'+(inc[t.id]?'<span class="b">カード中</span>':'')+'</div></div>'+
+          '<button type="button" class="ghost" data-a="del" data-id="'+t.id+'">削除</button></li>';
+      });
+      h+='</ul>';
+    }
     return h+'</section></div>';
   }
 
@@ -214,7 +236,7 @@ details.h summary{cursor:pointer;font-weight:700}
     });
     return h+'</div>';
   }
-  function avail(){var inc=inCard();return S.tasks.filter(function(t){return !t.done&&!inc[t.id]}).sort(cmp("due"))}
+  function avail(){var inc=inCard();return S.tasks.filter(function(t){return !t.done&&!expired(t)&&!inc[t.id]}).sort(cmp("due"))}
   function autosel(){
     var a=avail(),n=ui.n*ui.n;ui.sel={};
     a.slice(0,n).forEach(function(t){ui.sel[t.id]=1});
@@ -253,7 +275,7 @@ details.h summary{cursor:pointer;font-weight:700}
     S.log.forEach(function(l){cnt[l.d]=(cnt[l.d]||0)+1});
     for(i=6;i>=0;i--){d=new Date();d.setDate(d.getDate()-i);days.push(ymd(d))}
     var mx=Math.max(1,Math.max.apply(null,days.map(function(x){return cnt[x]||0})));
-    var h='<div class="cols"><section class="panel"><h2>最近7日の着手数</h2><div class="stat"><span>着手した回数 <b>'+S.log.length+'</b></span><span>完成したカード <b>'+S.hist.length+'</b>枚</span></div>'+
+    var h='<div class="cols"><section class="panel"><h2>最近7日の着手数</h2><div class="stat"><span>着手した回数 <b>'+S.log.length+'</b></span><span>完成したカード <b>'+S.hist.length+'</b>枚</span><span>期限までに終わらなかった課題 <b>'+(S.missed||0)+'</b>件</span></div>'+
       '<div class="chart" role="img" aria-label="最近7日の着手数">';
     days.forEach(function(x){var v=cnt[x]||0;h+='<div><span>'+v+'</span><i style="height:'+Math.round(v/mx*100*0.8)+'%'+(v?'':';visibility:hidden')+'"></i></div>'});
     h+='</div><div class="chart x">';
@@ -275,6 +297,7 @@ details.h summary{cursor:pointer;font-weight:700}
   }
 
   function render(){
+    if(sweep())save();
     var v=$("view");
     v.innerHTML=ui.tab==="tasks"?vTasks():ui.tab==="bingo"?vBingo():vRec();
     Array.prototype.forEach.call($("nav").children,function(b){
@@ -328,6 +351,7 @@ details.h summary{cursor:pointer;font-weight:700}
     if(e.target.id!=="tf")return;
     var name=$("tn").value.trim();
     if(!name){ui.th="課題の名前を入れてください。";ui.the=true;render();$("tn").focus();return;}
+    if($("td").value&&daysTo($("td").value)<0){ui.th="期限は今日以降の日付にしてください。";ui.the=true;render();return;}
     S.tasks.push({id:uid(),name:name,due:$("td").value||"",pri:parseInt($("tp").value,10),done:false});
     ui.th="「"+name+"」を登録しました。";ui.the=false;ui.sel=null;save();render();$("tn").focus();
   });
@@ -405,7 +429,7 @@ details.h summary{cursor:pointer;font-weight:700}
   }
   startFirebase();
   window.addEventListener("online",pull);
-  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")pull();});
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible"){pull();if(sweep()){save();render();}}});
 })();
 </script>
 </body>
